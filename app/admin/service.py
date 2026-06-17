@@ -7,8 +7,8 @@ import joblib
 import pandas as pd
 from fastapi import UploadFile
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
-from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score, log_loss
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
@@ -132,9 +132,11 @@ def train_model(dataset_path: Path | None = None) -> dict:
     selected_path = resolve_dataset_path(str(dataset_path)) if dataset_path else resolve_dataset_path()
     df = validate_dataset(selected_path)
 
+    # Langkah 3: Ekstraksi Fitur
     X = build_features_from_dataset(df)
     y = df["Impulsive_Target"].astype(int)
 
+    # Langkah 4: Pembagian Data (Kunci random_state=42 agar split data sama dengan Colab)
     stratify = y if y.nunique() > 1 else None
     X_train, X_test, y_train, y_test = train_test_split(
         X,
@@ -144,41 +146,80 @@ def train_model(dataset_path: Path | None = None) -> dict:
         stratify=stratify,
     )
 
-    pipeline = Pipeline(
+    # Langkah 5: Pembangunan Base Pipeline
+    base_pipeline = Pipeline(
         steps=[
             ("scaler", StandardScaler()),
             (
                 "model",
                 RandomForestClassifier(
-                    n_estimators=200,
                     class_weight="balanced",
-                    random_state=42,
+                    random_state=42,  # Mengunci keacakan pohon internal
                     n_jobs=-1,
                 ),
             ),
         ]
     )
-    pipeline.fit(X_train, y_train)
 
-    predictions = pipeline.predict(X_test)
+    # Langkah 6: Optimasi Parameter Menggunakan GridSearchCV
+    param_grid = {
+        "model__n_estimators": [100, 200, 300],
+        "model__max_depth": [None, 10, 20],
+        "model__min_samples_split": [2, 5],
+    }
+
+    # CV Folds disesuaikan aman untuk edge-case target tunggal jika ada
+    cv_folds = 5 if (stratify is not None and y_train.nunique() > 1) else 2
+
+    grid_search = GridSearchCV(
+        estimator=base_pipeline,
+        param_grid=param_grid,
+        cv=cv_folds,
+        scoring="f1_weighted",
+        n_jobs=-1,
+    )
+    
+    # Eksekusi pencarian parameter terbaik
+    grid_search.fit(X_train, y_train)
+    best_pipeline = grid_search.best_estimator_
+
+    # Langkah 7: Evaluasi Model (Klasifikasi dan Penambahan Nilai Error/Loss)
+    predictions = best_pipeline.predict(X_test)
     metrics = {
         "accuracy": float(accuracy_score(y_test, predictions)),
-        "precision": float(precision_score(y_test, predictions, zero_division=0)),
-        "recall": float(recall_score(y_test, predictions, zero_division=0)),
-        "f1": float(f1_score(y_test, predictions, zero_division=0)),
+        "precision": float(precision_score(y_test, predictions, zero_division=0, average="weighted")),
+        "recall": float(recall_score(y_test, predictions, zero_division=0, average="weighted")),
+        "f1": float(f1_score(y_test, predictions, zero_division=0, average="weighted")),
         "roc_auc": None,
+        "log_loss": None,
     }
 
     if y_test.nunique() > 1:
-        probabilities = pipeline.predict_proba(X_test)[:, 1]
-        metrics["roc_auc"] = float(roc_auc_score(y_test, probabilities))
+        probabilities = best_pipeline.predict_proba(X_test)
+        metrics["roc_auc"] = float(roc_auc_score(y_test, probabilities[:, 1]))
+        metrics["log_loss"] = float(log_loss(y_test, probabilities))
 
+    # Langkah 8: Analisis Fitur Paling Berpengaruh (Feature Importance)
+    best_rf_model = best_pipeline.named_steps["model"]
+    importances = best_rf_model.feature_importances_
+    
+    # Memetakan nilai kepentingannya dengan urutan menurun (descending)
+    feature_importance_dict = {
+        feature: float(importance)
+        for feature, importance in sorted(
+            zip(MODEL_FEATURE_COLUMNS, importances), key=lambda item: item[1], reverse=True
+        )
+    }
+
+    # Langkah 9 & 10: Penyimpanan Artefak Berkas .joblib
     model_path = Path(settings.MODEL_PATH)
     model_path.parent.mkdir(parents=True, exist_ok=True)
 
     artifact = {
-        "pipeline": pipeline,
+        "pipeline": best_pipeline,
+        "best_params": grid_search.best_params_,
         "feature_columns": MODEL_FEATURE_COLUMNS,
+        "feature_importance": feature_importance_dict,
         "trained_at": datetime.now(timezone.utc).isoformat(),
         "dataset": str(selected_path),
         "metrics": metrics,
@@ -191,6 +232,8 @@ def train_model(dataset_path: Path | None = None) -> dict:
         "model_path": str(model_path),
         "trained_at": artifact["trained_at"],
         "dataset": str(selected_path),
+        "best_params": grid_search.best_params_,
         "feature_columns": MODEL_FEATURE_COLUMNS,
+        "feature_importance": feature_importance_dict,
         "metrics": metrics,
     }
