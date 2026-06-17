@@ -15,5 +15,7 @@ class PadiBuyHistory(Base):
 
     is_impulsive = Column(Integer, nullable=False)
     confidence_rate = Column(Float, nullable=False)
+    model_version = Column(String, nullable=True)
+    input_json = Column(String, nullable=True)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())

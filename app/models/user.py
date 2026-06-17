@@ -1,6 +1,9 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.sql import func
+
+from app.config import settings
 from app.database import Base
+
 
 class User(Base):
     __tablename__ = "users"
@@ -11,3 +14,12 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    @property
+    def is_admin(self):
+        admin_emails = {
+            email.strip().lower()
+            for email in settings.ADMIN_EMAILS.split(",")
+            if email.strip()
+        }
+        return self.email.lower() in admin_emails
