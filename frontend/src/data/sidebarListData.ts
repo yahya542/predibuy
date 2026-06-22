@@ -1,7 +1,7 @@
 import sitemap from 'routes/sitemap';
 
 const HIDDEN_FOR_ALL = ['template-pages', 'settings', 'account-settings', 'authentication'];
-const ADMIN_ONLY = ['admin'];
+const ADMIN_ONLY = ['admin', 'dataset-analysis', 'model-trees'];
 
 export const topListData = sitemap.filter((item) => {
   if (HIDDEN_FOR_ALL.includes(item.id) || ADMIN_ONLY.includes(item.id)) return false;

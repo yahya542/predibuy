@@ -30,8 +30,8 @@ const Dashboard = () => {
     try {
       const response = await apiRequest<HealthStatus>('/health');
       setHealth(response);
-    } catch (err) {
- /*      setError(err instanceof Error ? err.message : 'Gagal membaca status API'); */
+    } catch {
+      /* setError disabled */
     } finally {
       setLoading(false);
     }

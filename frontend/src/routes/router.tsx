@@ -16,6 +16,8 @@ const Dashboard = lazy(() => import('pages/Dashboard'));
 const Prediction = lazy(() => import('pages/Prediction'));
 const History = lazy(() => import('pages/History'));
 const Admin = lazy(() => import('pages/Admin'));
+const DatasetAnalysis = lazy(() => import('pages/DatasetAnalysis'));
+const ModelTrees = lazy(() => import('pages/ModelTrees'));
 
 const router = createBrowserRouter([
   {
@@ -60,6 +62,22 @@ const router = createBrowserRouter([
             element: (
               <RequireAuth>
                 <Admin />
+              </RequireAuth>
+            ),
+          },
+          {
+            path: paths.datasetAnalysis,
+            element: (
+              <RequireAuth>
+                <DatasetAnalysis />
+              </RequireAuth>
+            ),
+          },
+          {
+            path: paths.modelTrees,
+            element: (
+              <RequireAuth>
+                <ModelTrees />
               </RequireAuth>
             ),
           },

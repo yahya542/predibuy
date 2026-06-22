@@ -86,15 +86,90 @@ export interface DatasetUploadResponse {
   dataset: DatasetInfo;
 }
 
+export interface TrainSplitInfo {
+  train_size: number;
+  test_size: number;
+  test_ratio: number;
+}
+
+export interface ClassDistribution {
+  impulsive: number;
+  wise: number;
+  total: number;
+}
+
 export interface TrainModelResponse {
+  status: string;
   model_path: string;
   trained_at: string;
   dataset: string;
+  best_params: Record<string, unknown>;
   feature_columns: string[];
+  feature_importance: Record<string, number>;
   metrics: Record<string, number | null>;
+  class_distribution: ClassDistribution;
+  split_info: TrainSplitInfo;
 }
 
 export interface HealthResponse {
   status: string;
   message: string;
+}
+
+export interface FeatureStat {
+  mean: number;
+  std: number;
+  min: number;
+  max: number;
+  median: number;
+}
+
+export interface IncomeStats {
+  mean: number;
+  median: number;
+  min: number;
+  max: number;
+  std: number;
+}
+
+export interface CategoryDistributions {
+  gender: Record<number, number>;
+  paylater_status: Record<number, number>;
+  education: Record<number, number>;
+  job_status: Record<number, number>;
+}
+
+export interface DatasetAnalysisResponse {
+  status: string;
+  dataset: DatasetInfo;
+  class_distribution: ClassDistribution;
+  feature_stats: Record<string, FeatureStat>;
+  score_distributions: Record<string, Record<number, number>>;
+  category_distributions: CategoryDistributions;
+  income_stats: IncomeStats;
+}
+
+export interface TreeNode {
+  gini: number;
+  samples: number;
+  value: number[];
+  class: string;
+  feature?: string;
+  threshold?: number;
+  children?: TreeNode[];
+}
+
+export interface TreeData {
+  tree_index: number;
+  root: TreeNode;
+}
+
+export interface ModelTreesResponse {
+  status: string;
+  total_trees: number;
+  shown_trees: number;
+  max_depth: number;
+  trained_at: string;
+  feature_columns: string[];
+  trees: TreeData[];
 }

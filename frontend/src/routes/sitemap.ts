@@ -45,6 +45,18 @@ const sitemap: MenuItem[] = [
     icon: 'mingcute:database-fill',
   },
   {
+    id: 'dataset-analysis',
+    subheader: 'Analisis Dataset',
+    path: paths.datasetAnalysis,
+    icon: 'mingcute:chart-bar-fill',
+  },
+  {
+    id: 'model-trees',
+    subheader: 'Struktur Pohon',
+    path: paths.modelTrees,
+    icon: 'mingcute:tree-fill',
+  },
+  {
     id: 'authentication',
     subheader: 'Authentication',
     icon: 'mingcute:safe-lock-fill',

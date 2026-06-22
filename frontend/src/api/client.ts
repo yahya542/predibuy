@@ -1,10 +1,12 @@
 import { clearAuth } from 'auth/auth';
 import type {
+  DatasetAnalysisResponse,
   DatasetInfo,
   DatasetListResponse,
   DatasetUploadResponse,
   HealthResponse,
   HistoryResponse,
+  ModelTreesResponse,
   PredictionRequest,
   PredictionResponse,
   TokenResponse,
@@ -140,6 +142,9 @@ export const adminApi = {
     apiRequest<DatasetInfo>(`/admin/datasets/${encodeURIComponent(filename)}/info`, {
       method: 'POST',
     }),
+  analyzeDataset: () => apiRequest<DatasetAnalysisResponse>('/admin/datasets/analyze', { method: 'POST' }),
+  getModelTrees: (treeLimit = 3, maxDepth = 4) =>
+    apiRequest<ModelTreesResponse>(`/admin/model/trees?tree_limit=${treeLimit}&max_depth=${maxDepth}`),
   trainModel: () => apiRequest<TrainModelResponse>('/admin/models/train', { method: 'POST' }),
   formatBytes,
 };
