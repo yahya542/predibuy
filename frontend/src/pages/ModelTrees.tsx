@@ -95,12 +95,12 @@ const ModelTrees = () => {
           data: [toEchartsTree(tree.root)],
           top: '8%',
           left: '8%',
-          bottom: '22%', 
+          bottom: '22%',
           right: '8%',
           symbolSize: 12,
-          orient: 'TB', 
+          orient: 'TB',
           label: {
-            position: 'top', 
+            position: 'top',
             verticalAlign: 'bottom',
             align: 'center',
             fontSize: 9,
@@ -150,7 +150,7 @@ const ModelTrees = () => {
   }
 
   return (
-    <Stack spacing={{ xs: 2.5, sm: 3, lg: 3.75 }}>
+    <Stack direction="column" spacing={{ xs: 2.5, sm: 3, lg: 3.75 }}>
       {/* Header + Controls */}
       <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" gap={2} alignItems={{ sm: 'center' }}>
         <Stack spacing={0.5}>
@@ -237,7 +237,7 @@ const ModelTrees = () => {
                   <Typography color="text.secondary" variant="body2">
                     Menampilkan rincian aturan pemisahan data berdasarkan kriteria Gini Impurity.
                   </Typography>
-                  
+
                   {/* Container ECharts untuk menampilkan pohon */}
                   <Box sx={{ width: '100%', height: 500, overflow: 'auto', mt: 1 }}>
                     <ReactEchart

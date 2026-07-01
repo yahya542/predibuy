@@ -1,14 +1,9 @@
 import { PaletteColorOptions, PaletteOptions } from '@mui/material/styles';
 import {
   grey,
-  red,
-  green,
   blue,
   cyan,
-  purple,
-  violate,
   yellow,
-  white,
   transparentRed,
   transparentGreen,
   transparentYellow,
@@ -58,8 +53,10 @@ const palette: PaletteOptions = {
     darker: grey[600],
   },
   primary: {
-    main: purple[500],
-    dark: purple[800],
+    main: '#cb3cff',
+    dark: '#7f25fb',
+    darker: '#4a009e',
+    lighter: '#e896ff',
   },
   secondary: {
     lighter: blue[200],
@@ -74,23 +71,25 @@ const palette: PaletteOptions = {
     darker: blue[900],
   },
   success: {
-    main: green[500],
+    main: '#14ca74',
+    light: '#60edaa',
   },
   warning: {
     main: yellow[500],
   },
   error: {
-    main: red[500],
+    main: '#ff5a65',
+    light: '#ff8a92',
   },
   text: {
-    primary: white[500],
-    secondary: grey[300],
-    disabled: grey[500],
+    primary: '#f0f4ff',
+    secondary: '#8899bb',
+    disabled: '#445577',
   },
   gradients: {
     primary: {
-      main: purple[500],
-      state: violate[600],
+      main: '#cb3cff',
+      state: '#7f25fb',
     },
   },
   transparent: {

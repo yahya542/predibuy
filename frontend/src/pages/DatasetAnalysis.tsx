@@ -191,7 +191,7 @@ const DatasetAnalysis = () => {
   }
 
   return (
-    <Stack spacing={{ xs: 2.5, sm: 3, lg: 3.75 }}>
+    <Stack direction="column" spacing={{ xs: 2.5, sm: 3, lg: 3.75 }}>
       {/* Header */}
       <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" gap={2}>
         <Stack spacing={0.5}>

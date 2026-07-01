@@ -130,7 +130,7 @@ const History = () => {
   }
 
   return (
-    <Stack spacing={{ xs: 2.5, sm: 3, lg: 3.75 }}>
+    <Stack direction="column" spacing={{ xs: 2.5, sm: 3, lg: 3.75 }}>
       {/* Summary Statistics */}
       {loading && history.length === 0 ? (
         <Grid container spacing={2}>
